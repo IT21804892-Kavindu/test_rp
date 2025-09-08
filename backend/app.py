@@ -21,7 +21,7 @@ CORS(app)  # Enable CORS for React frontend
 MODEL_DIR = Path(__file__).parent / 'models'
 RES_DIR = Path(__file__).parent / 'res'
 RF_MODEL_PATH = RES_DIR / 'random_forest_regression_model.pkl'
-TS_MODEL_PATH = MODEL_DIR / 'timeseries_model.h5'
+TS_MODEL_PATH = RES_DIR / 'timeseries_model.h5'
 
 # Global variables for models
 rf_model = None
@@ -87,18 +87,18 @@ def predict():
         data = request.get_json()
         
         # Validate input data
-        required_fields = ['rainfall', 'temperature', 'waterContent', 'Rainfall_7d_avg', 'WaterContent_7d_avg']
+        required_fields = ['temperature', 'rainfall', 'water_content', 'rainfall_7d_avg', 'watercontent_7d_avg']
         for field in required_fields:
             if field not in data:
                 return jsonify({'error': f'Missing required field: {field}'}), 400
         
         # Prepare features for prediction
         features = np.array([[
-            float(data['rainfall']),
             float(data['temperature']),
-            float(data['waterContent']),
-            float(data['Rainfall_7d_avg']),
-            float(data['WaterContent_7d_avg'])
+            float(data['rainfall']),
+            float(data['water_content']),
+            float(data['rainfall_7d_avg']),
+            float(data['watercontent_7d_avg'])
         ]])
         
         # Make prediction
@@ -129,9 +129,9 @@ def predict():
                 'premiseIndex': response['premiseIndex'],
                 'rainfall': float(data['rainfall']),
                 'temperature': float(data['temperature']),
-                'waterContent': float(data['waterContent']),
-                'Rainfall_7d_avg': float(data['Rainfall_7d_avg']),
-                'WaterContent_7d_avg': float(data['WaterContent_7d_avg']),
+                'water_content': float(data['water_content']),
+                'rainfall_7d_avg': float(data['rainfall_7d_avg']),
+                'watercontent_7d_avg': float(data['watercontent_7d_avg']),
                 'riskLevel': response['riskLevel'],
                 'confidence': response['confidence']
             }
