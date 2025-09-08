@@ -149,56 +149,62 @@ def predict():
 @app.route('/api/forecast', methods=['GET'])
 def forecast():
     """Generate time series forecast"""
-    try:
-        if not ts_model:
-            return jsonify({'error': 'Time Series model not loaded'}), 500
-        
-        days = int(request.args.get('days', 90))
-        
-        # Generate forecast dates
-        start_date = datetime.now()
-        dates = [(start_date + timedelta(days=i)).strftime('%Y-%m-%d') for i in range(days)]
-        
-        # Prepare input for time series model
-        # Note: You'll need to adjust this based on your model's input requirements
-        # This is a placeholder - replace with your actual preprocessing logic
-        
-        # Example: If your model expects a sequence of past values
-        # You might need to provide historical data or use a different approach
-        
-        # For demonstration, creating dummy input - REPLACE THIS
-        input_sequence = np.random.random((1, 30, 3))  # Adjust shape based on your model
-        
-        # Make forecast prediction
-        forecast_values = ts_model.predict(input_sequence)
-        
-        # Process forecast output based on your model's output format
-        if len(forecast_values.shape) > 1:
-            predictions = forecast_values.flatten()[:days].tolist()
-        else:
-            predictions = forecast_values[:days].tolist()
-        
-        # Ensure we have the right number of predictions
-        if len(predictions) < days:
-            # Extend with the last value if needed
-            last_value = predictions[-1] if predictions else 50.0
-            predictions.extend([last_value] * (days - len(predictions)))
-        
-        response = {
-            'dates': dates,
-            'predictions': [float(p) for p in predictions[:days]],
-            'confidence_intervals': {
-                'lower': [max(0, float(p) - 10) for p in predictions[:days]],
-                'upper': [min(100, float(p) + 10) for p in predictions[:days]]
-            }
-        }
-        
-        logger.info(f"Forecast generated for {days} days")
-        return jsonify(response)
-        
-    except Exception as e:
-        logger.error(f"Forecast error: {str(e)}")
-        return jsonify({'error': str(e)}), 500
+    # Temporarily disabled as per user request to avoid 500 errors.
+    # The time series model (ts_model) is likely failing to load due to dependency issues.
+    return jsonify({
+        'status': 'forecast_unavailable',
+        'message': 'The forecast feature is temporarily disabled.'
+    }), 200
+    # try:
+    #     if not ts_model:
+    #         return jsonify({'error': 'Time Series model not loaded'}), 500
+
+    #     days = int(request.args.get('days', 90))
+
+    #     # Generate forecast dates
+    #     start_date = datetime.now()
+    #     dates = [(start_date + timedelta(days=i)).strftime('%Y-%m-%d') for i in range(days)]
+
+    #     # Prepare input for time series model
+    #     # Note: You'll need to adjust this based on your model's input requirements
+    #     # This is a placeholder - replace with your actual preprocessing logic
+
+    #     # Example: If your model expects a sequence of past values
+    #     # You might need to provide historical data or use a different approach
+
+    #     # For demonstration, creating dummy input - REPLACE THIS
+    #     input_sequence = np.random.random((1, 30, 3))  # Adjust shape based on your model
+
+    #     # Make forecast prediction
+    #     forecast_values = ts_model.predict(input_sequence)
+
+    #     # Process forecast output based on your model's output format
+    #     if len(forecast_values.shape) > 1:
+    #         predictions = forecast_values.flatten()[:days].tolist()
+    #     else:
+    #         predictions = forecast_values[:days].tolist()
+
+    #     # Ensure we have the right number of predictions
+    #     if len(predictions) < days:
+    #         # Extend with the last value if needed
+    #         last_value = predictions[-1] if predictions else 50.0
+    #         predictions.extend([last_value] * (days - len(predictions)))
+
+    #     response = {
+    #         'dates': dates,
+    #         'predictions': [float(p) for p in predictions[:days]],
+    #         'confidence_intervals': {
+    #             'lower': [max(0, float(p) - 10) for p in predictions[:days]],
+    #             'upper': [min(100, float(p) + 10) for p in predictions[:days]]
+    #         }
+    #     }
+
+    #     logger.info(f"Forecast generated for {days} days")
+    #     return jsonify(response)
+
+    # except Exception as e:
+    #     logger.error(f"Forecast error: {str(e)}")
+    #     return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
     # Create models directory if it doesn't exist
